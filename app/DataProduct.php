@@ -14,28 +14,23 @@ class DataProduct extends Model
 
     protected $fillable = [
     	"nama_product",
-    	"kategori",
+    	"kategori_id",
     	"harga",
-    	"keterangan",
+    	"keterangan_id",
     	"stok",
     	"date",
-    	"color1",
-    	"image1",
-    	"color2",
-    	"image2",
-    	"color3",
-    	"image3",
+    	"color",
+    	"image",
     	"description"
     	];
 
     	public function kategori(){
     		return $this->belongsTo(
-    			"App\Kategori", "kategori_product", "id_kategori"
-    		);
+    			"App\Kategori", "kategori_id", "id_kategori");
     	}
 
     	public function keterangan(){
     		return $this->belongsTo(
-    			"App\Keterangan", "keterangan_product", "id_keterangan");
+    			"App\Keterangan", "keterangan_id", "id_keterangan");
     	}
 }

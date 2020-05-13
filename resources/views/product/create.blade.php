@@ -1,74 +1,120 @@
-@extends('layout')
-@section('content')
+@extends("layout.app")
 
-   <div class="card-body">
-                    <br>
-                    <form action="{{ route('product.store' )}}"  id="file-upload-form" accept-charset="utf-8" enctype="multipart/form-data" method="post">
+@section("content")
 
-                        @csrf
+<section class="section">
+ 
+    <div class="section-body">
+      <div class="col-12 col-md-12 col-lg-12">
+          <div class="card">
+            <div class="card-body">
+				
+				<!-- Content Header (Page header) -->
+	<div class="content-header">
+		<div class="container-fluid">
+		<div class="row mb-2">
+			<div class="col-sm-6">
+			<h1 class="m-0 text-dark">Tambah Data Produk</h1>
+		</div><!-- /.row -->
+		</div><!-- /.container-fluid -->
+	</div>
+	<!-- /.content-header -->
+<br/>
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
 
-                        <div class="form-group">
-                            <label class="control-label">Nama Product</label>
-                            <input type="text" name="nama_product" class="form-control" required>
+					@if($errors->any())
+						<div class="alert alert-danger alert-dismissible">
+							<a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+							<ul>
+								@foreach ($errors->all() as $error)
+									<li>{{ $error }}</li>
+								@endforeach
+							</ul>	
+						</div>
+					@endif
 
-                        </div>
+					<form action="{{ route('product.store') }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
 
-                         <div class="form-group">
+						<!-- tipe request bermacam - macam -->
+						<!-- Application/json -> tidak bisa kirim data -->
+						<!-- form/wwware -> tidak bisa kirim data -->
+				
+						@csrf
+						<!-- laraveel v5.5 ke bawah -->
+						<!-- {{ csrf_field() }} -->
+				
+						<div class="form-group">
+							<label class="control-label">Nama Produk</label>
+							<input type="text" name="nama_product" class="form-control">
+						</div>
+						<div class="form-group">
                             <label class="control-label">Kategori</label>
-                            <select class="form-control" name="kategori">
+                            <select class="form-control" name="kategori_id">
                                 @foreach($kategori as $k)
-                                    <option value="{{ $k->id }}">{{ $k->kategori_product }}</option>
+                                    <option value="{{ $k->id_kategori }}">{{ $k->kategori_product }}</option>
                                 @endforeach
                             </select>
                         </div>
-
-
-                        <div class="form-group">
-                            <label class="control-label">Harga</label>
-                            <input name="harga" class="form-control" required="required"></input>
-                        </div>
-
-                          <div class="form-group">
+						<div class="form-group">
+							<label class="control-label">Harga</label>
+							<input class="form-control" name="harga"></input>
+						</div>
+						<div class="form-group">
                             <label class="control-label">Keterangan</label>
-                            <select class="form-control" name="keterangan">
+                            <select class="form-control" name="keterangan_id">
                                 @foreach($keterangan as $ket)
-                                    <option value="{{ $ket->id }}">{{ $ket->keterangan_product }}</option>
+                                    <option value="{{ $ket->id_keterangan }}">{{ $ket->keterangan_product }}</option>
                                 @endforeach
                             </select>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Stok Barang</label>
+							<input class="form-control" name="stok"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Durasi Pre Order</label>
+							<input class="form-control" name="date"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Warna Tersedia</label>
+							<input class="form-control" name="color"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Deskripsi Produk</label>
+							<input class="form-control" name="description"></input>
+						</div>
+						<div class="form-group">
+                            <label class="control-label">Upload Image</label><br/>
+                            <input type="file" name="image"></input>
                         </div>
+						<div class="form-group">
+							<button class="btn btn-primary" type="submit">Simpan</button>
+							<a href="{{ route('product.index') }}" class="btn btn-danger">Batal</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+				
+            </div>
+            
+            </div>
+            
+            <div class="card-footer text-right">
+              <nav class="d-inline-block">
+                
+              </nav>
+            </div>
+          </div>
+        </div>  
+    </div>
+  
+  </section>
 
-                        <div class="form-group">
-                            <label class="control-label">Stok</label>
-                            <input name="stok" class="form-control"></input>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="control-label">Pre Order Date</label>
-                            <input name="date" class="form-control"></input>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Color</label>
-                            <input name="color" class="form-control"></input>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Photo</label>
-                            <input type="file" name="image" class="form-control" required="required"></input>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Description Product</label>
-                            <textarea class="form-control" name="description" rows="10" cols="5"></textarea>
-                        </div>
-                       
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Simpan</button>
-                            <a href="{{ route('product.index') }}" class="btn btn-danger">Batal</a>
-                        </div>
-
-                    </form>
-
-                </div>
 
 @endsection

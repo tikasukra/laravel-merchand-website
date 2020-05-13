@@ -14,11 +14,11 @@ class CreateProductTable extends Migration
     public function up()
     {
         Schema::create('product', function (Blueprint $table) {
-            $table->increments('id_product');
+            $table->increments('id');
             $table->string('nama_product');
-            $table->integer('kategori')->unsigned();
+            $table->integer('kategori_id')->unsigned();
             $table->integer('harga');
-            $table->integer('keterangan')->unsigned();
+            $table->integer('keterangan_id')->unsigned();
             $table->integer('stok')->nullable();
             $table->string('date')->nullable();
             $table->string('color')->nullable();
@@ -26,14 +26,14 @@ class CreateProductTable extends Migration
             $table->text('description')->nullable();
             $table->timestamps();
             $table->softDeletes();
-
-            $table->foreign('keterangan')->references('id_keterangan')->on('keterangan')
-            ->onDelete('restrict')
-            ->onUpdate('cascade');
-
-            $table->foreign('kategori')->references('id_kategori')->on('kategori')
-            ->onDelete('restrict')
-            ->onUpdate('cascade');
+        });
+        Schema::table('product', function($table){
+            $table->foreign('keterangan_id')->references('id_keterangan')->on('keterangan')
+            ->onDelete('cascade');
+        });
+        Schema::table('product', function($table){
+            $table->foreign('kategori_id')->references('id_kategori')->on('kategori')
+            ->onDelete('cascade');
         });
     }
 

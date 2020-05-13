@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class KeteranganSeeder extends Seeder
 {
@@ -12,8 +13,10 @@ class KeteranganSeeder extends Seeder
     public function run()
     {
         //
+
         DB::table('keterangan')->insert([
-        	'keterangan_product'=>'Ready Stock'
+            'keterangan_product'=>'Pre Order'
+            // 'keterangan_product'=>'Ready Stock'
         ]);
     }
 }

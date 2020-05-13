@@ -1,82 +1,107 @@
-@extends('layout')
-@section('content')
+@extends("layout.app")
 
-<div class="card-body">
-                    <form accept-charset="utf-8" enctype="multipart/form-data" method="POST" action="{{ route('product.update', ['id' => $product->id]) }}">
+@section("content")
 
-                        @csrf
-
-                        
-                       <div class="form-group">
-                            <label class="control-label">Nama Product</label>
-                            <input type="text" name="nama_product" class="form-control" value="{{ $product->nama_product }}">
-
-                        </div>
-
-                         <div class="form-group">
-                            <label class="control-label">Kategori</label>
-                            <select class="form-control" name="kategori">
-                               <option value="" hidden>pilih kategori</option>
-                                @foreach($kategori as $k)
-                                    <option value="{{ $k->id }}" {{ ($k->kategori == $k->id) ? 'selected' : ''}} >{{ $k->kategori_product }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-
-
-                        <div class="form-group">
-                            <label class="control-label">Harga</label>
-                            <input name="harga" class="form-control" value="{{ $product->harga }}"></input>
-                        </div>
-
-                          <div class="form-group">
+<section class="section">
+ 
+    <div class="section-body">
+      <div class="col-12 col-md-12 col-lg-12">
+          <div class="card">
+            <div class="card-body">
+				
+				<!-- Content Header (Page header) -->
+	<div class="content-header">
+		<div class="container-fluid">
+		<div class="row mb-2">
+			<div class="col-sm-6">
+			<h1 class="m-0 text-dark">Edit Data Produk</h1>
+		</div><!-- /.row -->
+		</div><!-- /.container-fluid -->
+	</div>
+	<!-- /.content-header -->
+<br/>
+	<section class="content">
+		<div class="container-fluid">
+			<div class="row">
+				<div class="col-md-12">
+					<form action="{{ route('product.update', $product->id) }}" method="POST" class="form-horizontal" enctype="multipart/form-data">
+						{{-- <input type="hidden" name="_method" value="PUT"> --}}
+						{{ method_field('PUT') }}
+						@csrf
+						<!-- laraveel v5.5 ke bawah -->
+						<!-- {{ csrf_field() }} -->
+				
+						<div class="form-group">
+							<label class="control-label">Nama Produk</label>
+						<input type="text" name="nama_product" class="form-control" value="{{ $product->nama_product }}">
+						</div>
+						<div class="form-group">
+							<label for="ruangan_id" class="control-label">Kategori</label>
+							  <select class="form-control" name="kategori_id">
+								@foreach( $kategori as $k)
+								<option value="{{ $k->id_kategori }}" {{ $k->id_kategori == $product->kategori_id ? 'selected="selected"' : '' }}> {{ $k->kategori_product }} </option>
+								@endforeach
+							  </select>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Harga</label>
+							<input class="form-control" name="harga" value="{{ $product->harga }}"</input>
+						</div>
+						<div class="form-group">
                             <label class="control-label">Keterangan</label>
-                            <select class="form-control" name="kategori">
-                               <option value="" hidden>pilih keterangan</option>
+                            <select class="form-control" name="keterangan_id">
                                 @foreach($keterangan as $ket)
-                                    <option value="{{ $ket->id }}" {{ ($ket->keterangan == $ket->id) ? 'selected' : ''}} >{{ $ket->keterangan_product }}</option>
+                                    <option value="{{ $ket->id_keterangan }}" {{ $ket->id_keterangan == $product->keterangan_id ? 'selected="selected"' : '' }}>{{ $ket->keterangan_product }}</option>
                                 @endforeach
                             </select>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Stok Barang</label>
+							<input class="form-control" name="stok" value="{{ $product->stok }}"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Durasi Pre Order</label>
+							<input class="form-control" name="date" value="{{ $product->date }}"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Warna Tersedia</label>
+							<input class="form-control" name="color" value="{{ $product->color }}"></input>
+						</div>
+						<div class="form-group">
+							<label class="control-label">Deskripsi Produk</label>
+							<input class="form-control" name="description" value="{{ $product->description }}"></input>
+						</div>
+						
+						<div class="form-group">
+							<img src="{{ Storage::url($product->image) }}" width="80px">
+						</div>	
+						<div class="form-group">
+                            <label class="control-label">Upload Image</label><br/>
+                            <input type="file" name="image"</input>
                         </div>
+						<div class="form-group">
+							<button class="btn btn-primary" type="submit">Simpan</button>
+							<a href="{{ route('product.index') }}" class="btn btn-danger">Batal</a>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</section>
+				
+            </div>
+            
+            </div>
+            
+            <div class="card-footer text-right">
+              <nav class="d-inline-block">
+                
+              </nav>
+            </div>
+          </div>
+        </div>  
+    </div>
+  
+  </section>	
 
-                        <div class="form-group">
-                            <label class="control-label">Stok</label>
-                            <input name="stok" class="form-control" value="{{ $product->stok }}"></input>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Pre Order Date</label>
-                            <input name="date" class="form-control" value="{{ $product->date }}"></input>
-                        </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Color</label>
-                            <input name="color" class="form-control" value="{{ $product->color }}"></input>
-                        </div>
-
-                        <div class="input-group mb-3">
-                          <div class="input-group-prepend">
-                              <span class="input-group-text" id="inputGroupFileAddon01">Photo</span>
-                            </div>
-                            <div class="custom-file">
-                              <input id="file-upload" type="file" name="image" accept="image/*" onchange="readURL(this);" aria-describedby="inputGroupFileAddon01">
-                              <label class="custom-file-label" label for="file-upload" id="file-drag">Choose file</label>
-                            </div>
-                          </div>
-
-                        <div class="form-group">
-                            <label class="control-label">Description Product</label>
-                            <textarea class="form-control" name="description" rows="10" cols="5">{{ $product->description }}</textarea>
-                        </div>
-                       
-                        <div class="form-group">
-                            <button class="btn btn-primary" type="submit">Simpan</button>
-                            <a href="{{ route('product.index') }}" class="btn btn-danger">Batal</a>
-                        </div>
-
-
-                    </form>
-
-                </div>
-
-@stop
+@endsection

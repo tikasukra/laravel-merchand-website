@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Facades\DB;
 
 class KategoriSeeder extends Seeder
 {
@@ -12,8 +13,11 @@ class KategoriSeeder extends Seeder
     public function run()
     {
         //
+
          DB::table('kategori')->insert(
-         	['kategori_product'=>'Drinkware']
+            //  ['kategori_product'=>'Drinkware']
+            //  ['kategori_product'=>'T-Shirt']
+             ['kategori_product'=>'Totebag']
     	);
     }
 }

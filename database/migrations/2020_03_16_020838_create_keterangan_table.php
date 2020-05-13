@@ -16,6 +16,7 @@ class CreateKeteranganTable extends Migration
         Schema::create('keterangan', function (Blueprint $table) {
             $table->increments('id_keterangan');
             $table->string('keterangan_product');
+            $table->timestamps();
         });
     }
 

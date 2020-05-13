@@ -4,7 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Kategori;
-use DB;
+use Carbon\Traits\Timestamp;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
+use Yajra\DataTables\Html\Builder;
 
 class KategoriController extends Controller
 {
@@ -13,11 +17,34 @@ class KategoriController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Builder $builder)
     {
-        //
-        $kategori = Kategori::all();
-        return view('kategori.index', compact('kategori'));
+        if(request()->ajax()){
+            return DataTables::of(Kategori::query())           
+            ->addColumn("action", function ($data) {
+                 return "
+                    <a id='delete-form' href='" . route("kategori.destroy", ["id_kategori" => $data->id_kategori]) . "' class='btn btn-danger'><i class='fas fa-trash'></i></a>
+                 ";
+            })->addIndexColumn()->toJson();
+        }
+
+        $html = $builder->columns([
+            ["data" => "DT_RowIndex", "name" => "#", "title" => "NO", "defaultContent" => "", "orderable" => false ],
+            ["data" => "kategori_product", "name" => "kategori_product", "title" => "KATEGORI PRODUCT"],
+            [
+                'defaultContent' => '',
+                'data'           => 'action',
+                'name'           => 'action',
+                'title'          => 'Action',
+                'render'         => null,
+                'orderable'      => false,
+                'searchable'     => false,
+                'exportable'     => false,
+                'printable'      => true,
+            ],
+        ]);
+
+        return view('category.index', compact('html'));
     }
 
     /**
@@ -28,7 +55,7 @@ class KategoriController extends Controller
     public function create()
     {
         //
-        return view('kategori.create');
+        return view('category.create');
     }
 
     /**
@@ -39,7 +66,15 @@ class KategoriController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validation = Validator::make($request->all(),[
+            "kategori_product" => "string|required"
+        ]);
+
+        if($validation->fails()) {
+        // dd($validation->errors());
+        return redirect()->back()->withErrors($validation)->withInput();
+        }
+        
         DB::table('kategori')->insert([
             'kategori_product' => $request->kategori_product]);
         return redirect()->route("kategori.index");
@@ -88,7 +123,7 @@ class KategoriController extends Controller
     public function destroy($id)
     {
         //
-        Kategori::where("id", $id)->delete();
+        Kategori::where("id_kategori", $id)->delete();
         return redirect()->route("kategori.index");
     }
 }

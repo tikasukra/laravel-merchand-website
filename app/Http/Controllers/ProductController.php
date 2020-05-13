@@ -3,20 +3,20 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use Illuminate\Support\Facades\File;
-
 use Illuminate\Support\Facades\Storage;
-
 use Illuminate\Support\Facades\DB;
-
 use App\DataProduct;
-
 use App\Kategori;
-
 use App\Keterangan;
-
+use App\User;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Validator;
+use Yajra\DataTables\DataTables;
+use Yajra\DataTables\HTML\Builder;
+use App\Http\Requests\ProductValidation;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ProductExport;
 
 class ProductController extends Controller
 {
@@ -30,20 +30,18 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        //
-        $product = DataProduct::when($request->search, function($query)
-            use($request){
-                $query->where('nama_product', 'LIKE', '%'.$request->search.'%')
-                ->orWhere('kategori', 'LIKE', '%'.$request->search.'%')
-                ->orWhere('keterangan', 'LIKE', '%'.$request->search.'%')
-                ->orWhere('harga', 'LIKE', '%'.$request->search.'%');
-            })->paginate(6);
+    
+        $product = DataProduct::when($request->search, function($query) use($request){
+            $query->where('nama_product', 'LIKE', '%'.$request->search.'%')
+            ->orwhere('kategori_product', 'LIKE', '%'.$request->search.'%');
+        })->join('kategori', 'kategori.id_kategori', '=', 'product.kategori_id')
+        ->join('keterangan', 'keterangan.id_keterangan', '=', 'product.keterangan_id')
+        ->paginate(5);
 
-        $kategori = Kategori::all();
+        $user = User::all();
 
-        $keterangan = Keterangan::all();
+        return view('product.index', compact('product','user'))->with('i', (request()->input('page', 1) - 1) * 10);
 
-        return view("product.index", ["product" => $product], compact("product", "kategori", "keterangan"));
     }
 
     /**
@@ -62,23 +60,32 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \App\Http\Requests\ProductValidation  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(ProductValidation $request)
     {
-        //
-        $this->validate($request,[
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
-        ]);
+        // $validation = Validator::make($request->all(),[
+        //         "nama_product" => "string|min:3|required",
+        //         "harga" => "integer|required",
+        //         "stok" => "integer",
+        //         "color" => "string|required",
+        //         "image" => "required|image|mimes:jpeg,png,jpg|max:2048",
+        //         "description" => "required",
+        //     ]);
+
+        // if($validation->fails()) {
+        //     // dd($validation->errors());
+        //     return redirect()->back()->withErrors($validation)->withInput();
+        // }
 
         $filePath = $request->file("image")->store("public");
 
         DB::table('product')->insert([
             'nama_product' => $request->nama_product,
-            'kategori' => $request->kategori,
+            'kategori_id' => $request->kategori_id,
             'harga' => $request->harga,
-            'keterangan' => $request->keterangan,
+            'keterangan_id' => $request->keterangan_id,
             'stok' => $request->stok,
             'date' => $request->date,
             'color' => $request->color,
@@ -113,10 +120,11 @@ class ProductController extends Controller
     public function edit($id)
     {
         //
-        $product = DataProduct::find($id);
         $kategori = Kategori::all();
         $keterangan = Keterangan::all();
-        return view('product.edit', compact('product', 'kategori', 'keterangan'));
+        $product = DataProduct::findOrFail($id);
+
+        return view('product.edit', compact('product','kategori','keterangan'));
     }
 
     /**
@@ -128,9 +136,74 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        DataProduct::where("id", $id)->update($request->except("_token")); //ambil semua data kecuali token
+
+        $nama_file = $request->hidden_image;
+        $file = $request->file('image');
+
+        if ($file !='') {
+                $this->validate($request, [
+                'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            ]);
+                $nama_file = time()."_".$file->getClientOriginalName();
+                $tujuan_upload = 'storage';
+                $file->move($tujuan_upload,$nama_file);
+        }else{
+            $request->validate([
+                "nama_product" => "string|min:3|required",
+                "harga" => "integer|required",
+                "stok" => "integer",
+                "color" => "string|required",
+                "image" => "image|mimes:jpeg,png,jpg|max:2048",
+                "description" => "required",
+            ]);
+        }
+
+        $form_data = array(
+            'nama_product' => $request->nama_product,
+            'kategori_id' => $request->kategori_id,
+            'harga' => $request->harga,
+            'keterangan_id' => $request->keterangan_id,
+            'stok' => $request->stok,
+            'date' => $request->date,
+            'color' => $request->color,
+            'image' => $nama_file,
+            'description' => $request->description
+        );
+
+
+
+        DataProduct::where('id',$id)->update($form_data);
+
         return redirect()->route("product.index");
+
+        // $filePath = $request->file("image")->store("public");
+
+        // $form_data = array(
+        //     'nama_product' => $request->nama_product,
+        //     'kategori_id' => $request->kategori_id,
+        //     'harga' => $request->harga,
+        //     'keterangan_id' => $request->keterangan_id,
+        //     'stok' => $request->stok,
+        //     'date' => $request->date,
+        //     'color' => $request->color,
+        //     'description' => $request->description,
+        //     'image' => $filePath
+        // );
+
+
+
+        // DataProduct::where("id", $id)->update($form_data->except("_token", "_method")->toArray()); //ambil semua data kecuali token
+        // return redirect()->route("product.index");
+
+        // DataProduct::where('id',$id)->update($form_data);
+
+        // return redirect()->route("product.index");
+
+
+
+        //
+        // DataProduct::where("id", $id)->update($request->except("_token")); //ambil semua data kecuali token
+        // return redirect()->route("product.index");
     }
 
     /**
@@ -145,4 +218,9 @@ class ProductController extends Controller
         DataProduct::where("id", $id)->delete();
         return redirect()->route("product.index");
     }
+
+    public function excel(){
+        return Excel::download(new ProductExport, 'product.xlsx');
+    }
+
 }

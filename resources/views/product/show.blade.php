@@ -1,64 +1,40 @@
-@extends('layout')
-@section('content')
+@extends("layout.app")
 
- <div class="card mt-5">
-                <div class="card-body" style="text-align: center;">
+@section("content")
 
-                    <img src="{{ Storage::url($product->image) }}" height="250px"><br><br>
+<!-- Content Header (Page header) -->
+<div class="content-header">
+	<div class="container-fluid">
+	<div class="row mb-2">
+		<div class="col-sm-6">
+		<h1 class="m-0 text-dark">Detail Data Produk</h1>
+		</div><!-- /.col -->
+	</div><!-- /.row -->
+	</div><!-- /.container-fluid -->
+</div>
+<!-- /.content-header -->
 
-                    <table class="table">
-                        <thead>
-                        <tr>
-                            <th>Nama Produk</th>
-                            <th>{{ $product->nama_product }}</th>
-                        </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td>Kategori Produk</td>
-                                <td>
-                                    
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Keterangan</td>
-                                <td>
-                                    
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Stok</td>
-                                <td>
-                                    {{ $product->stok }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Tanggal Pre-Order</td>
-                                <td>
-                                    {{ $product->date }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Pilihan Warna</td>
-                                <td>
-                                    {{ $product->color }}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Harga Produk</td>
-                                <td>
-                                    IDR {{$product->harga}}
-                                </td>
-                            </tr>
-                            <tr>
-                                <td>Deskripsi Produk</td>
-                                <td>
-                                    {{ $product->description }}
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-    
-                </div>
-            </div>
+<section class="content">
+	<div class="container-fluid">
+		<div class="row">
+			<div class="col-md-12">
+				<ul>
+					<li>ID : {{ $data->id }}</li>
+					<li>Nama : {{ $data->name }} </li>
+					<li>NIM : {{ $data->nim }} </li>
+					<li>Alamat : {{ $data->address }} </li>
+					{{-- <li>File Path : {{ $data->photo }} </li> --}}
+					<li>Gambar : </li>
+				
+					<li><img src="{{ Storage::url($data->photo) }}" height="150px"></li>
+				</ul>
+				
+				<!-- punya helper route -->
+				<a href="{{ route('biodata.index') }}">Kembali</a>
+			</div>
+		</div>
+	</div>
+</section>
+
+
 @endsection
